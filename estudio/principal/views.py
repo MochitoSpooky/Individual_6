@@ -1,12 +1,11 @@
 from django.shortcuts import render, redirect
 from principal.models import Usuario
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .forms import UsuarioForm
 from django import forms
 from django.contrib.auth.decorators import login_required
-
 
 
 def base(request):
@@ -27,15 +26,25 @@ def crear_usuario(request):
             email = form.cleaned_data['email']
             usuario = form.cleaned_data['usuario'] 
             contraseña = form.cleaned_data['contraseña']
-            
+            tipo_usuario = form.cleaned_data['tipo_usuario']  # Agregar campo 'tipo_usuario' al formulario
             
             # Crea un nuevo usuario
             user = User.objects.create_user(username=usuario, first_name=nombre, last_name=apellido, email=email)
             user.set_password(contraseña)
             user.save()
             
+            # Asignar al grupo Moderador o FotoFans según el tipo de usuario elegido
+            if tipo_usuario == 'moderador':
+                moderador_group = Group.objects.get(name='Moderador')
+                moderador_group.user_set.add(user)
+
+
+            elif tipo_usuario == 'fotofans':
+                fotofans_group = Group.objects.get(name='FotoFans')
+                fotofans_group.user_set.add(user)
+            
             # Redirecciona a la página de inicio
-            return redirect('lista_usuarios')
+            return redirect('base')
     else:
         form = UsuarioForm()
     
