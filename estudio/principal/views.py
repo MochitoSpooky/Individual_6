@@ -6,10 +6,31 @@ from django.contrib import messages
 from .forms import UsuarioForm
 from django import forms
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+from functools import wraps
+from .models import Galeria
+from .forms import GaleriaForm
 
 
 def base(request):
     return render(request, 'principal/base.html')
+
+#subir imagenes a la galeria
+def galeria(request):
+    images = Galeria.objects.all()
+    return render(request, 'principal/galeria.html', {'images': images})
+@login_required
+def subir_imagen(request):
+    if request.method == 'POST':
+        form = GaleriaForm(request.POST, request.FILES)
+        if form.is_valid():
+            imagen = form.save(commit=False)
+            imagen.autor = request.user  # Asigna el usuario actual
+            imagen.save()
+            return redirect('galeria')
+    else:
+        form = GaleriaForm()
+    return render(request, 'subir_imagen.html', {'form': form})
 
 @login_required(login_url='login')
 def lista_usuarios(request):
@@ -26,7 +47,7 @@ def crear_usuario(request):
             email = form.cleaned_data['email']
             usuario = form.cleaned_data['usuario'] 
             contraseña = form.cleaned_data['contraseña']
-            tipo_usuario = form.cleaned_data['tipo_usuario']  # Agregar campo 'tipo_usuario' al formulario
+            tipo_usuario = form.cleaned_data['tipo_usuario']
             
             # Crea un nuevo usuario
             user = User.objects.create_user(username=usuario, first_name=nombre, last_name=apellido, email=email)
@@ -65,6 +86,7 @@ def login_view(request):
             messages.error(request, 'Usuario o contraseña incorrectos.')
     
     return render(request, 'principal/login.html')
+
 def logout_view(request):
     logout(request)
     return redirect('base')# Redirecciona a la página principal después del cierre de sesión
@@ -75,3 +97,19 @@ def profile_view(request):
     user = request.user  # Usuario autenticado
     return render(request, 'principal/perfil.html', {'user': user})
 
+def group_required(*group_names):
+    def decorator(view_func):
+        @login_required
+        def wrapped_view(request, *args, **kwargs):
+            if not request.user.groups.filter(name__in=group_names).exists():
+                # El usuario no pertenece a ninguno de los grupos especificados, mostrar mensaje de error
+                return render(request, 'principal/error_permisos.html')
+            return view_func(request, *args, **kwargs)
+        return wrapped_view
+    return decorator
+
+@login_required
+@group_required('Moderador')
+def lista_usuarios(request):
+    usuarios = User.objects.all().prefetch_related('groups')
+    return render(request, 'principal/lista_usuarios.html', {'usuarios': usuarios})

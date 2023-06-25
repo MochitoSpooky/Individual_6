@@ -23,6 +23,12 @@
                 <ul class="navbar-nav ml-auto">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
+                            <a class="nav-link" href="{% url 'galeria' %}">Galeria</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'subir_imagen' %}">Subir Imagen</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="{% url 'lista_usuarios' %}">Lista de Usuarios</a>
                         </li>
                         <li class="nav-item">

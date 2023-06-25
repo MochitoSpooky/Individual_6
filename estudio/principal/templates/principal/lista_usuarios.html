@@ -9,6 +9,7 @@
                 <th>Nombre</th>
                 <th>Apellido</th>
                 <th>Email</th>
+                <th>Grupo</th> <!-- Nueva columna -->
             </tr>
         </thead>
         <tbody>
@@ -17,8 +18,14 @@
                 <td>{{ usuario.first_name }}</td>
                 <td>{{ usuario.last_name }}</td>
                 <td>{{ usuario.email }}</td>
+                <td>
+                    {% for group in usuario.groups.all %}
+                        {{ group.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    
 {% endblock %}
