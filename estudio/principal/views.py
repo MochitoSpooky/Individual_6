@@ -25,12 +25,13 @@ def subir_imagen(request):
         form = GaleriaForm(request.POST, request.FILES)
         if form.is_valid():
             imagen = form.save(commit=False)
-            imagen.autor = request.user  # Asigna el usuario actual
+            imagen.autor = request.user.username
             imagen.save()
             return redirect('galeria')
     else:
         form = GaleriaForm()
     return render(request, 'principal/subir_imagen.html', {'form': form})
+
 
 @login_required(login_url='login')
 def lista_usuarios(request):
