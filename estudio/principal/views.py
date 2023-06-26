@@ -24,13 +24,12 @@ def subir_imagen(request):
     if request.method == 'POST':
         form = GaleriaForm(request.POST, request.FILES)
         if form.is_valid():
-            imagen = form.save(commit=False)
-            imagen.autor = request.user.username
-            imagen.save()
+            form.save()
             return redirect('galeria')
     else:
         form = GaleriaForm()
     return render(request, 'principal/subir_imagen.html', {'form': form})
+
 
 
 @login_required(login_url='login')

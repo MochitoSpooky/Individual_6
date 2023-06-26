@@ -7,7 +7,7 @@
         <img src="{{ MEDIA_URL }}{{ image.imagen.url }}" alt="{{ image.nombre }}">
         <div class="image-details">
           <h3>{{ image.nombre }}</h3>
-          <p>Autor: {{ image.usuario.username }}</p>  <!-- Muestra el nombre de usuario del autor -->
+          <p>Autor: {{ image.autor }}</p>
           <p>Valor: {{ image.valor|format_value }}</p>
 
         </div>

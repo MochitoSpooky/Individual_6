@@ -5,7 +5,18 @@
     <h2>Subir Imagen</h2>
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
-      {{ form.as_p }}
+      {{ form.nombre.label_tag }}
+      {{ form.nombre }}
+      <br>
+      {{ form.autor.label_tag }}
+      {{ form.autor }}
+      <br>
+      {{ form.valor.label_tag }}
+      {{ form.valor }}
+      <br>
+      {{ form.imagen.label_tag }}
+      {{ form.imagen }}
+      <br>
       <button type="submit" class="btn btn-primary">Subir</button>
     </form>
   </div>
