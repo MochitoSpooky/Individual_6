@@ -19,23 +19,6 @@ def base(request):
 def galeria(request):
     images = Galeria.objects.all()
     return render(request, 'principal/galeria.html', {'images': images})
-@login_required
-def subir_imagen(request):
-    if request.method == 'POST':
-        form = GaleriaForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('galeria')
-    else:
-        form = GaleriaForm()
-    return render(request, 'principal/subir_imagen.html', {'form': form})
-
-
-
-@login_required(login_url='login')
-def lista_usuarios(request):
-    usuarios = User.objects.all()
-    return render(request, 'principal/lista_usuarios.html', {'usuarios': usuarios})
 
 def crear_usuario(request):
     if request.method == 'POST':
@@ -113,3 +96,16 @@ def group_required(*group_names):
 def lista_usuarios(request):
     usuarios = User.objects.all().prefetch_related('groups')
     return render(request, 'principal/lista_usuarios.html', {'usuarios': usuarios})
+
+
+@login_required
+@group_required('Moderador')
+def subir_imagen(request):
+    if request.method == 'POST':
+        form = GaleriaForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('galeria')
+    else:
+        form = GaleriaForm()
+    return render(request, 'principal/subir_imagen.html', {'form': form})
