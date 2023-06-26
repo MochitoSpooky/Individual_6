@@ -30,7 +30,7 @@ def subir_imagen(request):
             return redirect('galeria')
     else:
         form = GaleriaForm()
-    return render(request, 'subir_imagen.html', {'form': form})
+    return render(request, 'principal/subir_imagen.html', {'form': form})
 
 @login_required(login_url='login')
 def lista_usuarios(request):
